@@ -1,0 +1,14 @@
+{
+  "name": "my-generator-library",
+  "version": "1.0.0",
+  "dependencies": {
+  "my-generator-library": "file:../my-generator-library"
+  },
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Соколович Марко ІМ-52",
+  "license": "MIT"
+}
