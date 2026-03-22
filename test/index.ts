@@ -1,8 +1,8 @@
-import { incrementalCounter, consumeWithTimeout } from 'my-generator-library';
+/*import { incrementalCounter, consumeWithTimeout } from 'my-generator-library';
 
 console.log("Запуск бібліотеки");
 
 const counter = incrementalCounter(0);
 consumeWithTimeout(counter, 5);
 
-console.log("Кінець!");
+console.log("Кінець!");*/
