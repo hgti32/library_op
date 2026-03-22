@@ -79,3 +79,18 @@ function memoize<TArgs extends any[], TResult>(
     return result;
   };
 }
+
+const slowSum = (a: number, b: number) => {
+  console.log('--- Обчислення...');
+  return a + b;
+};
+
+const memoizedLRU = memoize(slowSum, { maxSize: 2, strategy: 'LRU' });
+memoizedLRU(1, 2);
+memoizedLRU(3, 4);
+memoizedLRU(1, 2);
+memoizedLRU(5, 6);
+
+const memoizedTTL = memoize(slowSum, { strategy: 'TTL', ttl: 1000 });
+memoizedTTL(10, 10);
+setTimeout(() => console.log("Через 2 сек:", memoizedTTL(10, 10)), 2000);
