@@ -51,5 +51,24 @@ class BiDirectionalPriorityQueue<T> {
     return targetIdx;
   }
 
+  peek(mode: 'highest' | 'lowest' | 'oldest' | 'newest'): T | undefined {
+    const idx = this.getTargetIndex(mode);
+    return idx === -1 ? undefined : this.nodes[idx].item;
+  }
 
+  dequeue(mode: 'highest' | 'lowest' | 'oldest' | 'newest'): T | undefined {
+    const idx = this.getTargetIndex(mode);
+    if (idx === -1) {
+      return undefined;
+    }
+    return this.nodes.splice(idx, 1)[0].item;
+  }
+
+  isEmpty(): boolean {
+    return this.nodes.length === 0;
+  }
+
+  size(): number {
+    return this.nodes.length;
+  }
 }
