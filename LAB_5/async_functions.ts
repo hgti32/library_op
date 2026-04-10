@@ -26,3 +26,21 @@ function filterAsyncCallback<T>(
     });
   });
 }
+
+//Promise-based
+async function filterAsync<T>(
+  array: T[],
+  predicate: (item: T, signal?: AbortSignal) => Promise<boolean>,
+  options?: { signal?: AbortSignal }
+): Promise<T[]> {
+  const signal = options?.signal;
+
+  const truthIndices = await Promise.all(
+    array.map(async (item) => {
+      if (signal?.aborted) throw new Error("Operation aborted");
+      return await predicate(item, signal);
+    })
+  );
+
+  return array.filter((_, index) => truthIndices[index]);
+}
