@@ -85,3 +85,31 @@ async function demo() {
 }
 demo();
 
+
+//Abortable support
+async function cancellableDemo() {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 150);
+
+  try {
+    const result = await filterAsync(
+      [10, 20, 30],
+      async (num) => {
+        await new Promise(resolve => setTimeout(resolve, 200));
+        return num > 15;
+      },
+      { signal: controller.signal }
+    );
+    console.log("Result:", result);
+  } catch (err: any) {
+    if (err.name === 'AbortError' || err.message.includes('abort') || err.message.includes('cancel')) {
+      console.log("Filtering was cancelled by the user or due to timeout");
+    } else {
+      throw err;
+    }
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+cancellableDemo();
