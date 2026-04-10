@@ -1,0 +1,28 @@
+//function - filter
+//Callback-based
+function filterAsyncCallback<T>(
+  array: T[],
+  predicate: (item: T, callback: (result: boolean) => void) => void,
+  onComplete: (result: T[]) => void
+): void {
+  const results: T[] = [];
+  let processedCount = 0;
+
+  if (array.length === 0) {
+    onComplete([]);
+    return;
+  }
+
+  array.forEach((item, index) => {
+    predicate(item, (isPassed) => {
+      if (isPassed) {
+        results[index] = item;
+      }
+      processedCount++;
+
+      if (processedCount === array.length) {
+        onComplete(results.filter(() => true)); 
+      }
+    });
+  });
+}
