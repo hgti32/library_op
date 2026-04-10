@@ -27,6 +27,7 @@ function filterAsyncCallback<T>(
   });
 }
 
+
 //Promise-based
 async function filterAsync<T>(
   array: T[],
@@ -44,3 +45,43 @@ async function filterAsync<T>(
 
   return array.filter((_, index) => truthIndices[index]);
 }
+
+
+//function - filterAsync
+// Async/Await
+async function checkPermissions(userIds: number[]) {
+  try {
+    const activeUsers = await filterAsync(userIds, async (id) => {
+      const response = await fetch(`/api/users/${id}/status`);
+      const data = await response.json();
+      return data.isActive;
+    });
+    
+    console.log("Active users:", activeUsers);
+  } catch (error) {
+    console.error("Failed to filter users:", error);
+  }
+}
+
+
+//Demo Cases
+const numbers = [1, 2, 3, 4, 5];
+
+filterAsyncCallback(
+  numbers,
+  (num, done) => setTimeout(() => done(num % 2 === 0), 100),
+  (result) => console.log("Callback Result:", result)
+);
+
+
+//Promise + Async/Await
+const words = ["apple", "iron", "banana", "ice"];
+
+async function demo() {
+  const startsWithI = await filterAsync(words, async (word) => {
+    return word.startsWith('i');
+  });
+  console.log("Words starting with 'i':", startsWithI);
+}
+demo();
+
