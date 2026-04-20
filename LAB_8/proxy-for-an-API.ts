@@ -45,3 +45,42 @@ class OAuth2Strategy implements AuthStrategy {
     return false;
   }
 }
+
+class AuthProxy {
+  private strategy: AuthStrategy;
+
+  constructor(strategy: AuthStrategy) {
+    this.strategy = strategy;
+  }
+
+  setStrategy(strategy: AuthStrategy) {
+    this.strategy = strategy;
+  }
+
+  async request(url: string, options: RequestInit = {}): Promise<Response> {
+    const authHeaders = await this.strategy.getAuthHeaders();
+    
+    const requestOptions: RequestInit = {
+      ...options,
+      headers: {
+        ...options.headers,
+        ...authHeaders,
+        'Content-Type': 'application/json',
+      },
+    };
+
+    console.log(`[Proxy] Requesting: ${url}`);
+    let response = await fetch(url, requestOptions);
+
+    if (this.strategy.handleResponse) {
+      const shouldRetry = await this.strategy.handleResponse(response);
+      if (shouldRetry) {
+        console.log("[Proxy] Retrying request after auth update...");
+        const newHeaders = await this.strategy.getAuthHeaders();
+        response = await fetch(url, { ...requestOptions, headers: { ...requestOptions.headers, ...newHeaders } });
+      }
+    }
+
+    return response;
+  }
+}
