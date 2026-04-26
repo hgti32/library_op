@@ -14,7 +14,7 @@ const defaultLoggerService = {
 };
 
 
-export function Log({ 
+function Log({ 
   level = 'INFO', 
   formatter = defaultJsonFormatter,
   loggerService = defaultLoggerService 
@@ -71,6 +71,29 @@ export function Log({
     };
 
     return descriptor;
-    
+
   };
+}
+
+
+class UserService {
+  @Log()
+  syncMethodSuccess(a: number, b: number) {
+    return a + b;
+  }
+
+  @Log({ level: 'DEBUG' })
+  async asyncMethodSuccess(userId: number) {
+    return new Promise((resolve) => {
+      setTimeout(() => resolve({ id: userId, name: "Marko" }), 500);
+    });
+  }
+
+  @Log({ level: 'ERROR' })
+  riskyMethod(shouldFail: boolean) {
+    if (shouldFail) {
+      throw new Error("Something went terribly wrong!");
+    }
+    return "Success, but you won't see this in logs.";
+  }
 }
