@@ -41,6 +41,36 @@ export function Log({
           loggerService.log(formattedMessage);
         }
       };
+
+      try {
+        const result = originalMethod.apply(this, args);
+
+        if (result instanceof Promise) {
+          return result
+            .then((resolvedValue) => {
+              const executionTime = `${(performance.now() - startTime).toFixed(2)}ms`;
+              emitLog({ ...createLogEntry(), result: resolvedValue, executionTime });
+              return resolvedValue;
+            })
+            .catch((error) => {
+              const executionTime = `${(performance.now() - startTime).toFixed(2)}ms`;
+              emitLog({ ...createLogEntry(), level: 'ERROR', error: error.message || error, executionTime }, true);
+              throw error;
+            });
+        }
+        const executionTime = `${(performance.now() - startTime).toFixed(2)}ms`;
+        emitLog({ ...createLogEntry(), result, executionTime });
+        
+        return result;
+
+      } catch (error: any) {
+        const executionTime = `${(performance.now() - startTime).toFixed(2)}ms`;
+        emitLog({ ...createLogEntry(), level: 'ERROR', error: error.message || error, executionTime }, true);
+        throw error;
+      }
     };
+
+    return descriptor;
+    
   };
 }
