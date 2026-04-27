@@ -40,3 +40,31 @@ class LargeDataProcessor {
     console.log(`Execution time: ${executionTime} seconds`);
   }
 }
+
+async function generateDummyLargeFile(filePath: string, linesCount: number) {
+  console.log(`Creating test file with ${linesCount} lines...`);
+  const writeStream = fs.createWriteStream(filePath);
+
+  for (let i = 1; i <= linesCount; i++) {
+    const level = Math.random() > 0.95 ? 'ERROR' : 'INFO';
+    const line = `2026-04-27T14:00:00Z [${level}] This is simulated log message number ${i}\n`;
+    
+    if (!writeStream.write(line)) {
+      await new Promise((resolve) => writeStream.once('drain', resolve));
+    }
+  }
+
+  writeStream.end();
+  return new Promise((resolve) => writeStream.once('finish', resolve));
+}
+
+async function runDemo() {
+  const testFilePath = './massive_dataset.log';
+
+  await generateDummyLargeFile(testFilePath, 500000);
+  console.log('Test file created successfully.');
+
+  await LargeDataProcessor.processLogFile(testFilePath);
+}
+
+runDemo();
